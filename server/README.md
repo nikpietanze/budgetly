@@ -1,7 +1,3 @@
-# Budgetly
-
-A simpler way to manage your manual budgeting.
-
 ## TODO:
 
 - Integrate DB
