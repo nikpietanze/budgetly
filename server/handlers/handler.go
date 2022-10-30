@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"budgetly/models"
+
+	"encoding/json"
 	"fmt"
 	"gorm.io/gorm"
 	"net/http"
@@ -35,6 +38,13 @@ type Handler struct {
 	Handle func(e *Env, w http.ResponseWriter, r *http.Request) error
 }
 
+type ModelData interface {
+	[]*models.User |
+	[]*models.Account |
+	[]*models.Expense |
+	[]*models.Revenue
+}
+
 func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err := handler.Handle(handler.Env, w, r)
 	if err != nil {
@@ -47,4 +57,15 @@ func (handler Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				http.StatusInternalServerError)
 		}
 	}
+}
+
+func ReturnJson[T ModelData](m T, w http.ResponseWriter) (bool, error) {
+	data, err := json.Marshal(m)
+	if err != nil {
+		return false, err
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(data)
+	return true, nil
 }
