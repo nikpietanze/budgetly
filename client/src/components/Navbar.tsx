@@ -10,7 +10,7 @@ enum Themes {
 }
 
 const Navbar: Component = () => {
-    const { isAuthenticated, loginWithRedirect } = useAuth0();
+    const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
     const [theme, setTheme] = createSignal(Themes.dark);
 
     const savedTheme = localStorage.getItem('theme');
@@ -54,7 +54,7 @@ const Navbar: Component = () => {
                             when={!isAuthenticated}
                             fallback={<li><span onClick={() => loginWithRedirect({})}>Login</span></li>}
                         >
-                            <li><a href="/logout">Logout</a></li>
+                            <li><span onClick={() => logout()}>Logout</span></li>
                         </Show>
                     </ul>
                 </div>

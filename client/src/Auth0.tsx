@@ -1,10 +1,10 @@
 import { createAuth0Client } from '@auth0/auth0-spa-js';
-import type { Auth0Client } from '@auth0/auth0-spa-js';
+import type { Auth0Client, LogoutOptions } from '@auth0/auth0-spa-js';
 import {
-    onMount,
     createContext,
     useContext,
     createSignal,
+    createResource,
     JSX
 } from 'solid-js';
 import type { Auth0State } from './types/auth0';
@@ -34,30 +34,33 @@ export function Auth0Provider(props: Auth0Props) {
     const [loading, setLoading] = createSignal<boolean>(true);
     const [popupOpen, setPopupOpen] = createSignal<boolean>(false);
 
-    onMount(async () => {
-        if (!props.onRedirectCallback) {
-            props.onRedirectCallback = DEFAULT_REDIRECT_CALLBACK;
-        }
-        const auth0FromHook = await createAuth0Client({
+    if (!props.onRedirectCallback) {
+        props.onRedirectCallback = DEFAULT_REDIRECT_CALLBACK;
+    }
+
+    createResource(async () => {
+        const client = await createAuth0Client({
             domain: props.domain,
             clientId: props.clientId,
         });
-        setAuth0Client(auth0FromHook);
+        setAuth0Client(client);
+        console.log(auth0Client())
 
         if (window.location.search.includes("code=") &&
             window.location.search.includes("state=")) {
-            const { appState } = await auth0FromHook.handleRedirectCallback();
+            const { appState } = await client.handleRedirectCallback();
             props.onRedirectCallback(appState);
         }
 
-        const isAuthenticated = await auth0FromHook.isAuthenticated();
+        const isAuthenticated = await client.isAuthenticated();
         setIsAuthenticated(isAuthenticated);
         if (isAuthenticated) {
-            const user = await auth0FromHook.getUser();
+            const user = await client.getUser();
             setUser(user);
         }
 
         setLoading(false);
+        return client;
     });
 
     const loginWithPopup = async (params = {}) => {
@@ -95,10 +98,10 @@ export function Auth0Provider(props: Auth0Props) {
                 loginWithPopup,
                 handleRedirectCallback,
                 getIdTokenClaims: () => auth0Client().getIdTokenClaims(),
-                loginWithRedirect: (p) => auth0Client().loginWithRedirect(p),
-                getTokenSilently: (p) => auth0Client().getTokenSilently(p),
-                getTokenWithPopup: (p) => auth0Client().getTokenWithPopup(p),
-                logout: (p) => auth0Client().logout(p)
+                loginWithRedirect: (opts) => auth0Client().loginWithRedirect(opts),
+                getTokenSilently: (opts) => auth0Client().getTokenSilently(opts),
+                getTokenWithPopup: (opts) => auth0Client().getTokenWithPopup(opts),
+                logout: (opts) => auth0Client().logout(opts),
             }}
         >
             {props.children}

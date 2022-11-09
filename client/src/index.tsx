@@ -1,4 +1,3 @@
-/* @refresh reload */
 import { render } from 'solid-js/web';
 import { Auth0Provider } from './Auth0';
 import { Router } from "@solidjs/router";

@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './routes/Home';
 import Login from './routes/Login';
+import Logout from './routes/Logout'
 import Account from './routes/Account';
 
 const App: Component = () => {
@@ -14,6 +15,7 @@ const App: Component = () => {
                 <Routes>
                     <Route path="/" component={Home} />
                     <Route path="/login" component={Login} />
+                    <Route path="/logout" component={Logout} />
                     <Route path="/account" component={Account} />
                 </Routes>
             </main>
