@@ -5,10 +5,8 @@ import Footer from './components/Footer';
 import Home from './routes/Home';
 import Login from './routes/Login';
 import Account from './routes/Account';
-import { useAuth0 } from './Auth0';
 
 const App: Component = () => {
-    const { isAuthenticated } = useAuth0();
     return (
         <div class="flex flex-col min-h-screen">
             <Navbar />

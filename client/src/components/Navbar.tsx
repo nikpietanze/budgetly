@@ -52,7 +52,7 @@ const Navbar: Component = () => {
                         <li><a href="/">Home</a></li>
                         <Show
                             when={!isAuthenticated}
-                            fallback={<li><a onClick={() => loginWithRedirect({})} href="#!">Login</a></li>}
+                            fallback={<li><span onClick={() => loginWithRedirect({})}>Login</span></li>}
                         >
                             <li><a href="/logout">Logout</a></li>
                         </Show>

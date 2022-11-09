@@ -30,7 +30,7 @@ export function Auth0Provider(props: Auth0Props) {
         boolean | undefined
     >(undefined);
     const [user, setUser] = createSignal();
-    const [auth0Client, setAuth0] = createSignal<Auth0Client>();
+    const [auth0Client, setAuth0Client] = createSignal<Auth0Client>();
     const [loading, setLoading] = createSignal<boolean>(true);
     const [popupOpen, setPopupOpen] = createSignal<boolean>(false);
 
@@ -38,8 +38,12 @@ export function Auth0Provider(props: Auth0Props) {
         if (!props.onRedirectCallback) {
             props.onRedirectCallback = DEFAULT_REDIRECT_CALLBACK;
         }
-        const auth0FromHook = await createAuth0Client(props);
-        setAuth0(auth0FromHook);
+        const auth0FromHook = await createAuth0Client({
+            domain: props.domain,
+            clientId: props.clientId,
+        });
+        setAuth0Client(auth0FromHook);
+
         if (window.location.search.includes("code=") &&
             window.location.search.includes("state=")) {
             const { appState } = await auth0FromHook.handleRedirectCallback();
@@ -91,10 +95,10 @@ export function Auth0Provider(props: Auth0Props) {
                 loginWithPopup,
                 handleRedirectCallback,
                 getIdTokenClaims: () => auth0Client().getIdTokenClaims(),
-                loginWithRedirect: (...p) => auth0Client().loginWithRedirect(...p),
-                getTokenSilently: (...p) => auth0Client().getTokenSilently(...p),
-                getTokenWithPopup: (...p) => auth0Client().getTokenWithPopup(...p),
-                logout: (...p) => auth0Client().logout(...p)
+                loginWithRedirect: (p) => auth0Client().loginWithRedirect(p),
+                getTokenSilently: (p) => auth0Client().getTokenSilently(p),
+                getTokenWithPopup: (p) => auth0Client().getTokenWithPopup(p),
+                logout: (p) => auth0Client().logout(p)
             }}
         >
             {props.children}
