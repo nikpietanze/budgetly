@@ -1,7 +1,8 @@
 import type { Component } from 'solid-js';
-import { createSignal, createEffect, onMount } from 'solid-js';
+import { createSignal, createEffect, onMount, Show } from 'solid-js';
 import logoLight from '../assets/img/budgetly_light.png';
 import logoDark from '../assets/img/budgetly_dark.png';
+import { useAuth0 } from '../Auth0';
 
 enum Themes {
     dark = "dark",
@@ -9,6 +10,7 @@ enum Themes {
 }
 
 const Navbar: Component = () => {
+    const { isAuthenticated, loginWithRedirect } = useAuth0();
     const [theme, setTheme] = createSignal(Themes.dark);
 
     const savedTheme = localStorage.getItem('theme');
@@ -48,7 +50,12 @@ const Navbar: Component = () => {
                     </label>
                     <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
                         <li><a href="/">Home</a></li>
-                        <li><a href="/login">Login</a></li>
+                        <Show
+                            when={!isAuthenticated}
+                            fallback={<li><a onClick={() => loginWithRedirect({})} href="#!">Login</a></li>}
+                        >
+                            <li><a href="/logout">Logout</a></li>
+                        </Show>
                     </ul>
                 </div>
             </div>
