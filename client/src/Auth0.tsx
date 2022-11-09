@@ -1,5 +1,5 @@
 import { createAuth0Client } from '@auth0/auth0-spa-js';
-import type { Auth0Client, LogoutOptions } from '@auth0/auth0-spa-js';
+import type { Auth0Client, LogoutOptions, PopupLoginOptions } from '@auth0/auth0-spa-js';
 import {
     createContext,
     useContext,
@@ -42,9 +42,11 @@ export function Auth0Provider(props: Auth0Props) {
         const client = await createAuth0Client({
             domain: props.domain,
             clientId: props.clientId,
+            authorizationParams: {
+                redirect_uri: props.redirectUri,
+            }
         });
         setAuth0Client(client);
-        console.log(auth0Client())
 
         if (window.location.search.includes("code=") &&
             window.location.search.includes("state=")) {
@@ -63,11 +65,11 @@ export function Auth0Provider(props: Auth0Props) {
         return client;
     });
 
-    const loginWithPopup = async (params = {}) => {
+    const loginWithPopup = async (options: PopupLoginOptions = {}) => {
         setPopupOpen(true);
 
         try {
-            await auth0Client().loginWithPopup(params);
+            await auth0Client().loginWithPopup(options);
         } catch (err) {
             console.error(err);
         } finally {

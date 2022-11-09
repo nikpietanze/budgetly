@@ -1,8 +1,9 @@
 import type { Component } from 'solid-js';
-import { createSignal, createEffect, onMount, Show } from 'solid-js';
+import { createSignal, createEffect, Show } from 'solid-js';
 import logoLight from '../assets/img/budgetly_light.png';
 import logoDark from '../assets/img/budgetly_dark.png';
 import { useAuth0 } from '../Auth0';
+import type { User } from '@auth0/auth0-spa-js';
 
 enum Themes {
     dark = "dark",
@@ -10,8 +11,17 @@ enum Themes {
 }
 
 const Navbar: Component = () => {
-    const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+    const { loading, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+    const [user, setUser] = createSignal<User>();
     const [theme, setTheme] = createSignal(Themes.dark);
+
+    createEffect(async () => {
+        if (!loading()) {
+            if (isAuthenticated()) {
+                setUser(useAuth0().user());
+            };
+        }
+    })
 
     const savedTheme = localStorage.getItem('theme');
     setTheme(savedTheme === Themes.dark ? Themes.dark : Themes.light);
@@ -38,23 +48,31 @@ const Navbar: Component = () => {
         return;
     }
 
-    onMount(() => createEffect(() => (toggleTheme(theme()))));
-
+    createEffect(() => toggleTheme(theme()));
 
     return (
         <nav class="navbar bg-base-100 border-b border-slate-700">
             <div class="navbar-start">
-                <div class="dropdown">
-                    <label tabindex="0" class="btn btn-ghost btn-circle">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
+                <div class="dropdown flex">
+                    <label tabindex="0" class="btn btn-ghost btn-circle ml-2">
+                        <Show
+                            when={isAuthenticated()}
+                            fallback={
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
+                            }
+                        >
+                            <img class="rounded-full" src={user()?.picture} />
+                        </Show>
                     </label>
-                    <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
+                    <ul tabindex="0" class="menu menu-compact dropdown-content mt-14 p-2 shadow-lg bg-base-100 rounded-lg w-52">
                         <li><a href="/">Home</a></li>
                         <Show
-                            when={!isAuthenticated}
-                            fallback={<li><span onClick={() => loginWithRedirect({})}>Login</span></li>}
+                            when={!loading() && !isAuthenticated()}
+                            fallback={
+                                <li><span onClick={() => logout()}>Logout</span></li>
+                            }
                         >
-                            <li><span onClick={() => logout()}>Logout</span></li>
+                            <li><span onClick={() => loginWithRedirect()}>Login</span></li>
                         </Show>
                     </ul>
                 </div>
@@ -80,7 +98,7 @@ const Navbar: Component = () => {
                     </div>
                 </button>
             </div>
-        </nav>
+        </nav >
     );
 };
 

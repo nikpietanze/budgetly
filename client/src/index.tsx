@@ -1,16 +1,17 @@
 import { render } from 'solid-js/web';
 import { Auth0Provider } from './Auth0';
 import { Router } from "@solidjs/router";
+import history from './history';
 
 import './index.css';
 import App from './App';
 
 const onRedirectCallback = appState => {
-    history.pushState({}, '',
-        appState && appState.targetUrl
-            ? appState.targetUrl
-            : window.location.pathname
-    )
+  history.push(
+    appState && appState.targetUrl
+      ? appState.targetUrl
+      : window.location.pathname
+  );
 };
 
 render(

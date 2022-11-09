@@ -1,10 +1,19 @@
 import type { Component } from 'solid-js';
+import { createSignal, createEffect } from 'solid-js';
 import { useAuth0 } from '../../Auth0';
 
+
 const Home: Component = () => {
-    const { isAuthenticated } = useAuth0();
-    const auth = isAuthenticated();
-    console.log('authenticated', isAuthenticated())
+    const { loading, isAuthenticated } = useAuth0();
+    const [authorized, setAuthorized] = createSignal<boolean>(false);
+
+    createEffect(() => {
+        if (!loading()) {
+            setAuthorized(isAuthenticated());
+            console.log('authorized:', authorized())
+        }
+    });
+
     return (
         <>
             <div class="hero py-44 bg-base-200">
@@ -15,9 +24,6 @@ const Home: Component = () => {
                         <a class="btn btn-primary" href="/login">Get Started</a>
                     </div>
                 </div>
-            </div>
-            <div>
-                <h2>Authenticated: {auth}</h2>
             </div>
         </>
     )

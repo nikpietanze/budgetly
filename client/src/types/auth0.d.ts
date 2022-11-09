@@ -12,7 +12,7 @@ export interface Auth0State {
     user: () => any;
     loading: () => boolean;
     popupOpen: () => boolean;
-    loginWithPopup: (options: PopupLoginOptions) => Promise<void>;
+    loginWithPopup: (options?: PopupLoginOptions) => Promise<void>;
     handleRedirectCallback: () => Promise<void>;
     getIdTokenClaims: () => Promise<IdToken>;
     loginWithRedirect: (options?: RedirectLoginOptions) => Promise<void>;
