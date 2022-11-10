@@ -1,16 +1,13 @@
 package main
 
 import (
-	"context"
 	"log"
 	"net/http"
 	"os"
 
 	"budgetly/db"
+    "budgetly/middleware"
 	"budgetly/handlers"
-
-	"github.com/auth0/go-jwt-middleware/v2"
-	"github.com/auth0/go-jwt-middleware/v2/validator"
 )
 
 func main() {
@@ -22,22 +19,7 @@ func main() {
 		Host: os.Getenv("HOST"),
 	}
 
-    // TODO: move middleware to separate module
-	keyFunc := func(ctx context.Context) (interface{}, error) {
-		return []byte("secret"), nil
-	}
-
-	jwtValidator, err := validator.New(
-		keyFunc,
-		validator.HS256,
-        "https://<issuer-url>/",
-		[]string{"<audience>"},
-	)
-	if err != nil {
-		log.Fatalf("failed to set up the validator: %v", err)
-	}
-
-	middleware := jwtmiddleware.New(jwtValidator.ValidateToken)
+    middleware := middleware.JWT()
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Welcome to the Budgetly API"))
@@ -50,3 +32,4 @@ func main() {
 	log.Printf("\nServer running on http://localhost%s\n", env.Port)
 	log.Fatal(http.ListenAndServe(env.Port, nil))
 }
+

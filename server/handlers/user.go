@@ -1,17 +1,25 @@
 package handler
 
 import (
-	"budgetly/models"
-
 	"encoding/json"
 	"errors"
 	"net/http"
 	"strings"
 
+	"budgetly/models"
+	"github.com/auth0/go-jwt-middleware/v2"
+	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"gorm.io/gorm/clause"
 )
 
 func User(env *Env, w http.ResponseWriter, r *http.Request) error {
+    claims, ok := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
+    if !ok {
+        return StatusError{500, errors.New("failed to get validated claims")}
+    }
+
+    println(claims)
+
 	id := strings.TrimPrefix(r.URL.Path, "/api/user/")
 
 	switch r.Method {
