@@ -21,6 +21,7 @@ export interface Auth0Props {
     children: JSX.Element;
     domain: string;
     clientId: string;
+    issuer: string;
     redirectUri: string;
     onRedirectCallback?: (appState: any) => void;
 }
@@ -42,6 +43,7 @@ export function Auth0Provider(props: Auth0Props) {
         const client = await createAuth0Client({
             domain: props.domain,
             clientId: props.clientId,
+            issuer: props.issuer,
             authorizationParams: {
                 redirect_uri: props.redirectUri,
             }

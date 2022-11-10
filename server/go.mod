@@ -3,15 +3,12 @@ module budgetly
 go 1.18
 
 require (
-	github.com/auth0/go-jwt-middleware v1.0.1
 	github.com/auth0/go-jwt-middleware/v2 v2.1.0
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	gorm.io/driver/postgres v1.4.5
 	gorm.io/gorm v1.24.1
 )
 
 require (
-	github.com/form3tech-oss/jwt-go v3.2.2+incompatible // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.13.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect

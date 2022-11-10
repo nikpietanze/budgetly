@@ -30,8 +30,8 @@ func main() {
 	jwtValidator, err := validator.New(
 		keyFunc,
 		validator.HS256,
-		"http://localhost:3000",
-		[]string{"https://dev-msewkuc22kp85583.us.auth0.com/api/v2/"},
+        "https://<issuer-url>/",
+		[]string{"<audience>"},
 	)
 	if err != nil {
 		log.Fatalf("failed to set up the validator: %v", err)
