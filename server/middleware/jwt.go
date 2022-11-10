@@ -4,20 +4,21 @@ import (
 	"context"
 	"log"
 
+    "budgetly/utils"
 	"github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
 )
 
 func JWT() *jwtmiddleware.JWTMiddleware {
 	keyFunc := func(ctx context.Context) (interface{}, error) {
-		return []byte("secret"), nil
+		return []byte(utils.GetEnv("SECRET")), nil
 	}
 
 	jwtValidator, err := validator.New(
 		keyFunc,
 		validator.HS256,
-        "http://localhost:3000/",
-		[]string{"https://dev-msewkuc22kp85583.us.auth0.com/api/v2/"},
+        utils.GetEnv("ISSUER"),
+		[]string{utils.GetEnv("AUDIENCE")},
 	)
 	if err != nil {
 		log.Fatalf("failed to set up the validator: %v", err)
