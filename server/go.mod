@@ -3,7 +3,15 @@ module budgetly
 go 1.18
 
 require (
-	github.com/gorilla/mux v1.8.0 // indirect
+	github.com/auth0/go-jwt-middleware v1.0.1
+	github.com/auth0/go-jwt-middleware/v2 v2.1.0
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	gorm.io/driver/postgres v1.4.5
+	gorm.io/gorm v1.24.1
+)
+
+require (
+	github.com/form3tech-oss/jwt-go v3.2.2+incompatible // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.13.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
@@ -13,9 +21,9 @@ require (
 	github.com/jackc/pgtype v1.12.0 // indirect
 	github.com/jackc/pgx/v4 v4.17.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/jinzhu/now v1.1.5 // indirect
-	golang.org/x/crypto v0.0.0-20221012134737-56aed061732a // indirect
-	golang.org/x/text v0.3.8 // indirect
-	gorm.io/driver/postgres v1.4.4 // indirect
-	gorm.io/gorm v1.24.0 // indirect
+	github.com/jinzhu/now v1.1.4 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
+	golang.org/x/text v0.3.7 // indirect
+	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 )
