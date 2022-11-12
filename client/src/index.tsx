@@ -19,7 +19,6 @@ render(
         <Auth0Provider
             domain={import.meta.env.VITE_AUTH0_DOMAIN}
             clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-            issuer={window.location.origin}
             redirectUri={window.location.origin}
             onRedirectCallback={onRedirectCallback}
         >

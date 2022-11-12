@@ -1,11 +1,11 @@
-import { Component, createEffect, onMount } from 'solid-js';
+import { Component, createEffect } from 'solid-js';
 import { useAuth0 } from '../../Auth0';
 
 const Logout: Component = () => {
-    const { loading, logout } = useAuth0();
+    const { isLoading, logout } = useAuth0();
 
     createEffect(() => {
-        if (!loading()) {
+        if (!isLoading()) {
             logout();
         }
     });

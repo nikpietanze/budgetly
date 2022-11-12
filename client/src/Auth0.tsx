@@ -1,5 +1,4 @@
 import { createAuth0Client } from '@auth0/auth0-spa-js';
-import type { Auth0Client, LogoutOptions, PopupLoginOptions } from '@auth0/auth0-spa-js';
 import {
     createContext,
     useContext,
@@ -9,10 +8,6 @@ import {
 } from 'solid-js';
 import type { Auth0State } from './types/auth0';
 
-const DEFAULT_REDIRECT_CALLBACK = () => {
-    window.history.replaceState({}, document.title, window.location.pathname);
-}
-
 export const Auth0Context = createContext<Auth0State>();
 export const useAuth0 = () => useContext(Auth0Context);
 
@@ -21,95 +16,99 @@ export interface Auth0Props {
     children: JSX.Element;
     domain: string;
     clientId: string;
-    issuer: string;
     redirectUri: string;
     onRedirectCallback?: (appState: any) => void;
 }
 
 export function Auth0Provider(props: Auth0Props) {
-    const [isAuthenticated, setIsAuthenticated] = createSignal<
-        boolean | undefined
-    >(undefined);
-    const [user, setUser] = createSignal();
-    const [auth0Client, setAuth0Client] = createSignal<Auth0Client>();
-    const [loading, setLoading] = createSignal<boolean>(true);
-    const [popupOpen, setPopupOpen] = createSignal<boolean>(false);
+    const [isAuthenticated, setIsAuthenticated] = createSignal<boolean>(false);
+    const [isLoading, setIsLoading] = createSignal<boolean>(true);
+    const [user, setUser] = createSignal(null);
+    const [error, setError] = createSignal<Error>(null);
 
     if (!props.onRedirectCallback) {
-        props.onRedirectCallback = DEFAULT_REDIRECT_CALLBACK;
+        window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    createResource(async () => {
-        const client = await createAuth0Client({
-            domain: props.domain,
-            clientId: props.clientId,
-            issuer: props.issuer,
-            authorizationParams: {
-                redirect_uri: props.redirectUri,
-            }
-        });
-        setAuth0Client(client);
-
-        if (window.location.search.includes("code=") &&
-            window.location.search.includes("state=")) {
-            const { appState } = await client.handleRedirectCallback();
-            props.onRedirectCallback(appState);
+    const auth0ClientPromise = createAuth0Client({
+        domain: props.domain,
+        clientId: props.clientId,
+        authorizationParams: {
+            redirect_uri: props.redirectUri,
         }
-
-        const isAuthenticated = await client.isAuthenticated();
-        setIsAuthenticated(isAuthenticated);
-        if (isAuthenticated) {
-            const user = await client.getUser();
-            setUser(user);
-        }
-
-        setLoading(false);
-        return client;
     });
 
-    const loginWithPopup = async (options: PopupLoginOptions = {}) => {
-        setPopupOpen(true);
+    createResource(async () => {
+        const client = await auth0ClientPromise;
 
         try {
-            await auth0Client().loginWithPopup(options);
+            const search = window.location.search;
+            if (
+                (search.includes("code=") || search.includes("error=")) &&
+                search.includes("state=")
+            ) {
+                const { appState } = await client.handleRedirectCallback();
+                props.onRedirectCallback(appState);
+            }
         } catch (err) {
-            console.error(err);
+            setError(err);
         } finally {
-            setPopupOpen(false);
+            setIsAuthenticated(await client.isAuthenticated());
+            setUser(await client.getUser() || null);
+            setIsLoading(false);
         }
+    });
 
-        const user = await auth0Client().getUser();
-        setUser(user);
-        setIsAuthenticated(true);
-    };
+    const login = async () => {
+        try {
+            const client = await auth0ClientPromise;
+            await client.loginWithRedirect();
+        } catch (err) {
+            setError(err);
+        }
+    }
 
-    const handleRedirectCallback = async () => {
-        setLoading(true);
-        await auth0Client().handleRedirectCallback();
-        const user = await auth0Client().getUser();
-        setLoading(false);
-        setIsAuthenticated(true);
-        setUser(user);
-    };
+    const logout = async () => {
+        try {
+            const client = await auth0ClientPromise;
+            await client.logout({
+                async onRedirect(url) {
+                    window.location.replace(url);
+                }
+            });
+        } catch (err) {
+            setError(err);
+        }
+    }
+
+    const getAccessToken = async () => {
+        try {
+            const client = await auth0ClientPromise;
+            return await client.getTokenSilently();
+        } catch (err) {
+            setError(err);
+        }
+    }
 
     return (
         <Auth0Context.Provider
             value={{
                 isAuthenticated,
+                isLoading,
                 user,
-                loading,
-                popupOpen,
-                loginWithPopup,
-                handleRedirectCallback,
-                getIdTokenClaims: () => auth0Client().getIdTokenClaims(),
-                loginWithRedirect: (opts) => auth0Client().loginWithRedirect(opts),
-                getTokenSilently: (opts) => auth0Client().getTokenSilently(opts),
-                getTokenWithPopup: (opts) => auth0Client().getTokenWithPopup(opts),
-                logout: (opts) => auth0Client().logout(opts),
+                error,
+                login,
+                logout,
+                getAccessToken
             }}
         >
             {props.children}
         </Auth0Context.Provider>
     );
+}
+
+function isRedirect(url: string) {
+    const [, query] = url.split('?');
+    return query && query.includes('code=') && query.includes('state=');
 }
 

@@ -4,11 +4,11 @@ import { useAuth0 } from '../../Auth0';
 
 
 const Home: Component = () => {
-    const { loading, isAuthenticated } = useAuth0();
+    const { isLoading, isAuthenticated } = useAuth0();
     const [authorized, setAuthorized] = createSignal<boolean>(false);
 
     createEffect(() => {
-        if (!loading()) {
+        if (!isLoading()) {
             setAuthorized(isAuthenticated());
             console.log('authorized:', authorized())
         }

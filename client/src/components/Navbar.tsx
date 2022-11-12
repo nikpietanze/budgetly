@@ -11,12 +11,12 @@ enum Themes {
 }
 
 const Navbar: Component = () => {
-    const { loading, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+    const { isLoading, isAuthenticated, login, logout } = useAuth0();
     const [user, setUser] = createSignal<User>();
     const [theme, setTheme] = createSignal(Themes.dark);
 
     createEffect(async () => {
-        if (!loading()) {
+        if (!isLoading()) {
             if (isAuthenticated()) {
                 setUser(useAuth0().user());
             };
@@ -74,8 +74,8 @@ const Navbar: Component = () => {
                     <svg class="h-6" viewBox="0 0 24 24" style="fill: none; stroke: currentcolor;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                 </div>
                 <Show
-                    when={!loading() && user()}
-                    fallback={<button class="btn btn-ghost" onClick={() => loginWithRedirect()}>Sign in</button>}
+                    when={!isLoading() && user()}
+                    fallback={<button class="btn btn-ghost" onClick={() => login()}>Sign in</button>}
                 >
                     <div class="dropdown dropdown-end">
                         <label tabindex="0" class="btn btn-ghost btn-circle flex justify-center items-center">
