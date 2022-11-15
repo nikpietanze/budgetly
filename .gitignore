@@ -1,6 +1,3 @@
-/client/.env
-/client/node_modules
-/client/dist
-
-/server/.env
-/server/pgdata
+.env
+target
+*/dist
