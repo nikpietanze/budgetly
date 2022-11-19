@@ -1,22 +1,19 @@
 [package]
 name = "server"
 version = "0.1.0"
-authors = ["Nik Pietanze"]
+authors = ["Nik Pietanze <nikpietanze@gmail.com>"]
 edition = "2021"
 rust-version = "1.65"
 
 [dependencies]
-actix-web = { version = "4", features = ["rustls"] }
-actix-web-httpauth = "^0.8.0"
-actix-cors = "^0.6.4"
+actix-web = "4"
+actix-web-httpauth = "0.8.0"
+actix-cors = "0.6.4"
 awc = "3.0.1"
-derive_more = "^0.99.16"
-dotenv = "^0.15.0"
-env_logger = "^0.9.0"
+diesel = { version = "2", features = ["postgres", "r2d2"] }
+derive_more = "0.99.16"
+dotenv = "0.15"
+env_logger = "0.9.0"
 envy = "^0.4.2"
-jsonwebtoken = "^8.0.0-beta.6"
-sea-orm = { version = "^0", features = ["runtime-actix-rustls", "sqlx-postgres", "macros"] }
-serde = "^1.0.130"
-entity = { path = "../entity" }
-migration = { path = "../migration" }
-
+jsonwebtoken = "8.0.0-beta.6"
+serde = { version = "1", features = ["derive"] }
