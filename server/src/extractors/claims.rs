@@ -1,10 +1,10 @@
 use crate::types::ErrorMessage;
 use actix_web::{
-    client::Client,
     error::ResponseError,
     http::{StatusCode, Uri},
     Error, FromRequest, HttpResponse,
 };
+use awc::Client;
 use actix_web_httpauth::{
     extractors::bearer::BearerAuth, headers::www_authenticate::bearer::Bearer,
 };
@@ -96,7 +96,6 @@ impl Claims {
 impl FromRequest for Claims {
     type Error = Error;
     type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
-    type Config = ();
 
     fn from_request(
         req: &actix_web::HttpRequest,
@@ -122,9 +121,11 @@ impl FromRequest for Claims {
                         .unwrap(),
                 )
                 .send()
-                .await?
+                .await
+                .unwrap()
                 .json()
-                .await?;
+                .await
+                .unwrap();
             let jwk = jwks
                 .find(&kid)
                 .ok_or_else(|| ClientError::NotFound("No JWK found for kid".to_string()))?;

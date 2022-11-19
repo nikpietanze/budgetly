@@ -5,7 +5,7 @@ pub struct Config {
     #[serde(default = "default_host")]
     pub host: String,
     pub port: u16,
-    pub db_url: String,
+    pub database_url: String,
     pub client_origin_url: String,
     pub auth0_audience: String,
     pub auth0_domain: String,
