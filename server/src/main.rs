@@ -5,12 +5,20 @@ mod types;
 
 use actix_web::{App, HttpServer};
 use dotenv::dotenv;
+use sea_orm::{Database, DatabaseConnection};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     env_logger::init();
     let config = types::Config::default();
+
+    let db_url = config.db_url;
+    let host = config.host;
+    let port = config.port;
+
+    let conn = Database::connect(db_url).await.unwrap();
+
     let auth0_config = extractors::Auth0Config::default();
     HttpServer::new(move || {
         App::new()
@@ -21,7 +29,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middlewares::logger())
             .service(api::routes())
     })
-    .bind((config.host, config.server_port))?
+    .bind((host, port))?
     .run()
     .await
 }

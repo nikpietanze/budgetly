@@ -2,5 +2,7 @@
 
 members = [
     "server",
+    "entity",
+    "migration",
     "client",
 ]

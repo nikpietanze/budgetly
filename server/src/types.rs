@@ -4,8 +4,11 @@ use serde::{Deserialize, Serialize};
 pub struct Config {
     #[serde(default = "default_host")]
     pub host: String,
-    pub server_port: u16,
+    pub port: u16,
+    pub db_url: String,
     pub client_origin_url: String,
+    pub auth0_audience: String,
+    pub auth0_domain: String,
 }
 
 fn default_host() -> String {
